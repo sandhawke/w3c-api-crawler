@@ -93,8 +93,15 @@ let fetch = (fetcher, pageURL, done) => {
 				// trace("res: ", res);
 				// trace("headers: ", res.headers);
 				
+				if (res.statusCode == 429) {
+					console.log('You hit the rate limit.  Go away for an hour.')
+					if (fetcher.ondone) { fetcher.ondone(); }
+					return   // WITHOUT calling done() since we don't want
+					// to pass back this error 429
+				}
+
 				if (res.statusCode !== 200) {
-					trace("HTTP ERR")
+					trace("HTTP ERR", pageURL)
 					let result = {
 						headers: {},
 						data: null,
@@ -192,8 +199,13 @@ let readFile = (fetcher, url, done) => {
 		if (err) {
 			done(null)
 		} else {
-			let p = JSON.parse(data)
-			done(p)
+			try {
+				let p = JSON.parse(data)
+				done(p)
+			} catch (e) {
+				console.log('warning: non JSON save file at', f)
+				done(null) 
+			}
 		}
 	})
 }

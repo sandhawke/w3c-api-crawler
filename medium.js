@@ -25,12 +25,39 @@ let headers = {
 exports.fetcher = new fetcher.Fetcher({addHeaders:headers, escapeSlash:false})
 let f = exports.fetcher
 
+// Given obj[prop].href is defined, make it so obj[prop] is now the
+// full object, of which there should be only one copy in memory.
+//
+// Also copies obj._links[prop] over to obj[prop]
+let obtain = (obj, prop, foreach, done)=>{
+	let href = obj._link[prop].href
+	let found = objects[href]
+	if (found) {
+		obj._link[prop] = found
+		obj[prop] = found
+		done(found)
+	} else {
+		fetchAndSave(href, obj, prop, foreach, done)
+	}
+}
+
+let fetchAndSave = (href, obj, prop, foreach, done)=>{
+	// try it as a list, and if it's not really a list, then just
+	// do the assign?
+
+	// "save" as soon as we get the first page, I think.
+}
+
 // obj.href must be the URL of the JSON to use to fill in the rest of
 // the properties.  When that's done, call cb.  Also, copy
 // obj._links[x] to obj[x], so we don't need to use _links.
 let fetchObject = (obj, cb) => {
 	f.fetch(obj.href, (result) => {
-		Object.assign(obj, result.data, result.data._links)
+		if (result) {
+			Object.assign(obj, result.data, result.data._links)
+		} else {
+			console.log('WARNING: failed on ', obj.href)
+		}
 		if (cb) { cb(obj) }
 	})
 }

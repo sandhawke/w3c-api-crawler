@@ -22,17 +22,24 @@ let w3cdata = { groups: { href: groupsURL } }
 let count = 0
 
 let eachGroup = (g)=>{
-	if (g.title.slice(0,5) === 'Hydra') {
+	if (g.title.slice(0,5) === 'Hydra' || g.title[0] === 'A') {
 		medium.fetchObject(g, ()=>{
-			medium.fetchList(g, 'users', eachUser)
-			medium.fetchList(g, 'services')
+			//console.log("TITLE", g.title, g)
+			if (g.users) { medium.fetchList(g, 'users', eachUser) }
+			if (g.services) { medium.fetchList(g, 'services') }
 		})
+	}
+}
+
+let allAffils = (affils)=>{
+	if (affils.length > 1) {
+		console.log("LONG AFFILS", affils)
 	}
 }
 
 let eachUser = (u)=>{
 	medium.fetchObject(u, ()=>{
-		medium.fetchList(u, 'affiliations')
+		medium.fetchList(u, 'affiliations', null, allAffils)
 	})
 }
 				 
