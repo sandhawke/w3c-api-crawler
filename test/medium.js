@@ -72,4 +72,15 @@ describe('fetchList', () => {
 							 })
 		})
 	})
+
+	it('should get someones affiliations', (done)=>{
+		// at random
+		let person = { 'href': 'https://api-test.w3.org/users/kc0dbwhntb4gksk8ckog888cs04cg0k
+' }
+		medium.fetchObject(person, ()=>{
+			medium.fetchList(person, 'affiliations', null,
+							 (all) => {
+								 console.log('affil', all)
+								 assert.equal(all[0].title, 'Ministério do Planejamento')
+	})
 })

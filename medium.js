@@ -60,6 +60,12 @@ let fetchListPage = (url, obj, prop, all, cbeach, cbdone) => {
 		}
 		obj[prop].total = result.data.total
 		let items = result.data._links[prop]
+		// IF there's only one item, the damn thing doesn't put it in
+		// an array!!
+		if (items && ! Array.isArray(items)) {
+			items = [items]
+		}
+
 		if (cbeach) { items.forEach(cbeach) }
 		Array.prototype.push.apply(all, items)
 		let next

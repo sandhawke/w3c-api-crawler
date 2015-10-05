@@ -21,7 +21,7 @@ const path = require('path')
 const mkdirp = require('mkdirp')
 
 function trace() {
-	console.log.call(console, arguments)
+	console.log.apply(console, arguments)
 }
 
 function Fetcher(options) {
@@ -186,8 +186,9 @@ let filename = (fetcher, url) => {
 }
 
 let readFile = (fetcher, url, done) => {
-	//trace('readfile', url)
-	fs.readFile(filename(fetcher, url), function(err, data) {
+	let f = filename(fetcher, url)
+	fs.readFile(f, function(err, data) {
+		trace('readfile', f)
 		if (err) {
 			done(null)
 		} else {

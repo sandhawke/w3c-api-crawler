@@ -32,7 +32,7 @@ let eachGroup = (g)=>{
 
 let eachUser = (u)=>{
 	medium.fetchObject(u, ()=>{
-		//medium.fetchList(u, 'affiliations')
+		medium.fetchList(u, 'affiliations')
 	})
 }
 				 
