@@ -1,0 +1,19 @@
+{
+  "name": "w3capi",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha"
+  },
+  "author": "",
+  "license": "W3C",
+  "dependencies": {
+    "mkdirp": "^0.5.1",
+    "node-fetch": "^1.3.3"
+  },
+  "devDependencies": {
+    "chai": "^3.3.0",
+    "mocha": "^2.3.3"
+  }
+}
