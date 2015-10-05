@@ -1,5 +1,12 @@
 /*
 
+  Encodes how the W3C API is structured (using HAL) without
+  getting into the details of which data we want
+
+  @@ TODO: do structure merging -- two objects with the same href
+  should turn into the same javascript object -- but this will give
+  us cycles so JSON wont work without looper/cyclejs
+
 */
 'use strict'
 
@@ -15,8 +22,8 @@ let headers = {
 	Accept: 'text/json'
 }
 
-let f = new fetcher.Fetcher({threads:10, addHeaders:headers, escapeSlash:false})
-
+exports.fetcher = new fetcher.Fetcher({addHeaders:headers, escapeSlash:false})
+let f = exports.fetcher
 
 // obj.href must be the URL of the JSON to use to fill in the rest of
 // the properties.  When that's done, call cb.  Also, copy
@@ -24,7 +31,7 @@ let f = new fetcher.Fetcher({threads:10, addHeaders:headers, escapeSlash:false})
 let fetchObject = (obj, cb) => {
 	f.fetch(obj.href, (result) => {
 		Object.assign(obj, result.data, result.data._links)
-		cb(obj)
+		if (cb) { cb(obj) }
 	})
 }
 
@@ -46,7 +53,11 @@ let fetchList = (obj, prop, cbeach, cbdone) => {
 let fetchListPage = (url, obj, prop, all, cbeach, cbdone) => {
 	trace('fetchListPage', prop, url)
 	f.fetch(url, (result) => {
-		// console.log(result)
+		if (! result.data) {
+			console.log('ERROR')
+			console.log(result)
+			return
+		}
 		obj[prop].total = result.data.total
 		let items = result.data._links[prop]
 		if (cbeach) { items.forEach(cbeach) }

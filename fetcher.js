@@ -21,7 +21,7 @@ const path = require('path')
 const mkdirp = require('mkdirp')
 
 function trace() {
-	// console.log.call(console, arguments)
+	console.log.call(console, arguments)
 }
 
 function Fetcher(options) {
@@ -108,6 +108,9 @@ let fetch = (fetcher, pageURL, done) => {
 					done(result)
 					return
 				}
+
+				let remaining = res.headers['x-ratelimit-remaining']
+				console.log('remaining', remaining)
 				
 				res.on('data', function(d) {
 					buf += d
