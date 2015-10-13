@@ -3,10 +3,6 @@
   Crawl something like api.w3.org to produce w3cdata.json, which has
   the same data in one structure.
 
-  BUGS?
-  
-  -- with 10k fetches done, I only have 7301 files on disk.  How is that?
-
 */
 'use strict'
 
