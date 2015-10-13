@@ -3,13 +3,15 @@
 	read the api-pages dump and produce a graph structure by replacing
 	every { href=foo } with pages[foo] itself.
 
+  A note on the output format: it used to be like iNNNNN and I changed
+  it to p[NNNNN] and it got about 15% faster to load.  So I think the
+  array form is pretty good.
+
  */
 'use strict'
 
-const jc = require('json-cycle')
 const fs = require('fs')
 const debug = require('debug')('hrefloop')
-const looper = require('./looper')
 
 let file = 'w3c-api-pages.json'
 let file2 = 'w3c-api-jsonref.json'
@@ -33,7 +35,7 @@ let hrefLoopItem = (pages, parent, prop) => {
 let hrefLoop = (pages) => {
 	let n = 10000
 	for (let url in pages) {
-		varname[url] = "i"+n++
+		varname[url] = "p["+(n++)+"]"
 	}
 	for (let url in pages) {
 		let page = pages[url]
@@ -120,10 +122,11 @@ fs.readFile(file, (err, data) => {
 		varnameList.push(varname[url])
 	}
 	varnameList.sort()
-	let out = fs.createWriteStream("dataset.js")
+	let out = fs.createWriteStream("dataset2.js")
 
 	out.write('// First, create each of the objects in memory, with a name,\n')
 	out.write('// so we can create cycles and shared references, below.\n')
+  out.write('var p=[]\n')
 	for (let v of varnameList) {
 		let url = urls[v]
 		let d = data[url]
@@ -131,7 +134,7 @@ fs.readFile(file, (err, data) => {
 		if (Array.isArray(d)) {
 			blank = '[]'
 		}
-		out.write('var '+v+'='+blank+'\n')
+		out.write(v+'='+blank+'\n')
 	}
 
 	out.write('\n// Now, set the values of each of those objects')
@@ -139,6 +142,7 @@ fs.readFile(file, (err, data) => {
 		let url = urls[v]
 		let d = data[url]
 		if (Array.isArray(d)) {
+      if (d.length === 0) continue
 			out.write( '\n\nArray.prototype.push.apply(' )
 		} else if (typeof d === 'object') {
 			out.write( '\n\nObject.assign(' )
@@ -147,7 +151,7 @@ fs.readFile(file, (err, data) => {
 		} else {
 			console.error('bad data value', d)
 		}
-		out.write(v+', '+desc(JSON.stringify(data[url], null, 2))+')')
+		out.write(v+', '+desc(JSON.stringify(d, null, 2))+')')
 	}
 
 
@@ -166,5 +170,6 @@ fs.readFile(file, (err, data) => {
 	//out.write('\nexports.specifications='+varname['https://api-test.w3.org/specifications']+'\n')
 	//out.write('\nexports.domains='+varname['https://api-test.w3.org/domains']+'\n')
 	out.write('\nexports.users=users\n')
+  out.write('\nexports.pages=p\n')
 
 })
