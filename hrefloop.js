@@ -116,6 +116,8 @@ fs.readFile(file, (err, data) => {
   varnameList.sort()
   let out = fs.createWriteStream('dataset.js')
 
+  out.write('// Works as a node.js module or in browser as w3cdata.*\n')
+  out.write('(function(exports){\n')
   out.write('// First, create each of the objects in memory, with a name,\n')
   out.write('// so we can create cycles and shared references, below.\n')
   out.write('var p=[]\n')
@@ -162,4 +164,6 @@ fs.readFile(file, (err, data) => {
   // out.write('\nexports.domains='+varname['https://api-test.w3.org/domains']+'\n')
   out.write('\nexports.users=users\n')
   out.write('\nexports.pages=p\n')
+  out.write('})(typeof exports === \'undefined\'? this[\'w3cdata\']={}: exports);\n')
+  
 })
