@@ -1,0 +1,28 @@
+'use strict'
+
+console.log('running...')
+const d = w3cdata
+
+let groups = []
+for (let g of d.pages) {
+  if (g && g.discr === 'w3cgroup' && g.users && g.users.length) {
+    groups.push(g)
+  }
+}
+groups.sort( (a,b) => {
+  return (b.users.length) - (a.users.length)
+})
+
+let lines = []
+for (let g of groups) {
+  let users = g.users
+  lines.push(" "+users.length+" "+g.name)
+  if (false) {
+    for (let u of users) {
+      console.log('    ', u.name)
+    }
+  }
+}
+document.getElementById("out").innerHTML = "<pre>"+lines.join("\n")+"</pre"
+
+console.log('done...')
